@@ -74,7 +74,7 @@ from stable_baselines3 import DQN
 from ThymioEnv import ThymioEnv
 
 
-env=ThymioEnv(robot=ThymioControlM(),goal=[0.75,0.25])
+env=ThymioEnv(robot=ThymioControlM(),goal=[1,0.6])
 
 stable_baselines3.common.env_checker.check_env(env,warn=True)
 
@@ -82,15 +82,15 @@ env.robot.sim_speed=int(4096)
 env.robot.display=True
 env.robot.sim.setBoolParam(env.robot.sim.boolparam_display_enabled,env.robot.display)
 
-#model = DQN("MlpPolicy", env, verbose=1)
-#model.learn(total_timesteps=100000, log_interval=1)
-#model.save("move_robot_c")
-#del model # remove to demonstrate saving and loading
+model = DQN("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=100000, log_interval=1)
+model.save("move_robot_c")
+del model # remove to demonstrate saving and loading
 model = DQN.load("move_robot_c")
 
-print("Modelo treinado com sucesso! Vamos lá testar o modelo treinado!")
+print("Model trained succesful! Let's just try it out!")
 
-env=ThymioEnv(robot=ThymioControlC(),goal=[0.75,0.25])
+env=ThymioEnv(robot=ThymioControlC(),goal=[1,0.6])
 env.robot.sim_speed=int(1)
 obs = env.reset()
 env.robot.display=True

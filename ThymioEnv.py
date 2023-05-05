@@ -4,13 +4,13 @@ import math
 
 class ThymioEnv(gym.Env):
     ''' OpenAI Gym environment for the Thymio robot '''
-    def __init__(self,robot,goal=[0.75,0.25]):
+    def __init__(self,robot,goal=[1,0.6]):
         #self.action_space = gym.spaces.Discrete(3)
         self.action_space = gym.spaces.discrete.Discrete(3)
-        self.observation_space = gym.spaces.Box(low=-4, high=4, shape=(3,))
+        self.observation_space = gym.spaces.Box(low=-5, high=5, shape=(3,))
         self.robot=robot
         self.steps=0
-        self.goal=[0.75,0.25]
+        self.goal=[1,0.6]
 
     def step(self, action):
         ''' Performs a simulation step, returns observation, reward, terminated, truncated, info '''
@@ -42,7 +42,7 @@ class ThymioEnv(gym.Env):
             #reward for reaching the goal
             reward+=100.0
             reached=True
-            print(f"Chegou!! Reward: {reward}")
+            print(f"Yuhuuuu!! Reward: {reward}")
         else:
             reached=False
 
