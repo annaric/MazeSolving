@@ -35,7 +35,7 @@ class ThymioEnv(gym.Env):
         #Check distance to goal
         dist=self.distance(self.robot.getPose(),self.goal)
         #penalize distance to goal
-        reward-=dist**2
+        #reward-=dist**2
 
         #Check if reached goal
         if dist<0.25:
