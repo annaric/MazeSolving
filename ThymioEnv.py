@@ -28,14 +28,14 @@ class ThymioEnv(gym.Env):
 
         elif action==2:
             self.robot.turn(-90) 
-            reward+=0.1
+            reward+=0.5
         self.robot.step()
         self.steps+=1
         
         #Check distance to goal
         dist=self.distance(self.robot.getPose(),self.goal)
         #penalize distance to goal
-        #reward-=dist**2
+        reward-=dist**2
 
         #Check if reached goal
         if dist<0.25:
