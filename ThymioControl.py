@@ -44,9 +44,12 @@ class ThymioControl(ABC):
     
     def getProximity(self):
         ''' Returns the proximity sensor readings as a list of 7 values'''
+        #prox = (self.sim.handleProximitySensor(self.handles['/Thymio/ProximityCenter'])[1])
+        #print("prox: ", prox)
         prox = []
         for h in self.names['prox']:
             prox.append(self.sim.handleProximitySensor(self.handles[h])[1])
+        #print(prox)
         return prox
     
     def setSpeeds(self,left,right):
@@ -62,12 +65,9 @@ class ThymioControl(ABC):
         ''' Returns the robot pose as a list of 3 values: x, y, theta'''
         self.step()
         matrix=self.sim.getObjectMatrix(self.handles[self.names['robot'][0]],self.sim.handle_world)
-        o=self.sim.getEulerAnglesFromMatrix(matrix)
         p=[matrix[3],matrix[7],matrix[11]]
 
-        o[2]= ( o[2] + math.pi) % (2 * math.pi ) - math.pi
-
-        return [p[0],p[1],o[2]]
+        return [p[0],p[1]]
     
     def step(self):
         ''' Performs a simulation step'''
@@ -85,13 +85,23 @@ class ThymioControl(ABC):
         
     
     @abstractmethod
-    def forward(self,distance):
-        '''Robot moves forward a given distance'''
+    def north(self,distance):
+        '''Robot moves north a given distance'''
         pass
 
     @abstractmethod
-    def turn(self,angle):
-        '''Robot turns a given angle'''
+    def east(self,distance):
+        '''Robot moves east a given distance'''
+        pass
+
+    @abstractmethod
+    def south(self,distance):
+        '''Robot moves south a given distance'''
+        pass
+
+    @abstractmethod
+    def west(self,distance):
+        '''Robot moves west a given distance'''
         pass
 
     @abstractmethod

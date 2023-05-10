@@ -1,26 +1,78 @@
 from ThymioControl import ThymioControl
-from math import radians, fabs
+from math import fabs
 import time
 
 
 class ThymioControlM(ThymioControl):
     ''' Thymio Control Class for the Mobile Robots Lab -- Moves the robot by setting the Pose in simulation'''
-    def forward(self,distance):
-        '''Robot moves forward a given distance'''
-        p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-        pm=self.sim.buildPose([distance,0,0],[0,0,0],0)
-        p2=self.sim.multiplyPoses(p1,pm)
-        self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p2)               
-        #print(f'distance: {math.sqrt((p2[1]-p1[1])*(p2[1]-p1[1])+(p2[0]-p1[0])*(p2[0]-p1[0]))}')
-        #self.step()
-
-
-    def turn(self,angle):
-        p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-        pm=self.sim.buildPose([0,0,0],[0,0,radians(angle)],0)
-        p2=self.sim.multiplyPoses(p1,pm)
-        self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p2)                       
-        #self.step()
+    def north(self,distance):  
+        self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,90])
+        prox=0
+        for p in self.getProximity():
+            prox+=p
+        if (prox > 0.5):
+            print("wall in front. Went north")
+            print("prox: ", prox)
+            return False
+        else:
+            print("Went north")
+            p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
+            p1[1]+=distance
+            self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
+            print(p1)
+            return True
+    
+    def east(self,distance):  
+        self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,0])
+        #prox = self.getProximity()
+        prox=0
+        for p in self.getProximity():
+            prox+=p
+        if (prox > 2000):
+            print("wall in front. Went east")
+            print("prox: ", prox)
+            return False
+        else:
+            print("Went east")
+            p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
+            p1[0]+=distance
+            self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
+            print(p1)
+            return True
+    
+    def south(self,distance):       
+        self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,-90])
+        prox=0
+        for p in self.getProximity():
+            prox+=p
+        if (prox > 3500):
+            print("wall in front. Went south")
+            print("prox: ", prox)
+            return False
+        else:
+            print("Went south")
+            p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
+            p1[1]-=distance
+            self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
+            print(p1)
+            return True
+    
+    def west(self,distance):
+        self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,180])
+        prox=0
+        for p in self.getProximity():
+            prox+=p
+        if (prox > 2000):
+            print("wall in front. Went west")
+            print("prox: ", prox)
+            return False
+        else:
+            print("Went west")
+            p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
+            p1[0]-=distance
+            self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
+            print(p1)
+            return True
 
     def check_valid_state(self): 
         return not self.getContacts(body='/Thymio') and not self.out_of_bounds(body='/Thymio')
@@ -74,14 +126,16 @@ from stable_baselines3 import DQN
 from ThymioEnv import ThymioEnv
 
 
-env=ThymioEnv(robot=ThymioControlM(),goal=[1,0.6])
+env=ThymioEnv(robot=ThymioControlM(),goal=[-0.8,0.2])
 
 stable_baselines3.common.env_checker.check_env(env,warn=True)
 
 env.robot.sim_speed=int(4096)
 env.robot.display=True
 env.robot.sim.setBoolParam(env.robot.sim.boolparam_display_enabled,env.robot.display)
+env.robot.getProximity()
 
+#"""
 model = DQN("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
@@ -90,7 +144,7 @@ model = DQN.load("move_robot_c")
 
 print("Model trained succesful! Let's just try it out!")
 
-env=ThymioEnv(robot=ThymioControlC(),goal=[1,0.6])
+env=ThymioEnv(robot=ThymioControlC(),goal=[-0.8,0.2])
 env.robot.sim_speed=int(1)
 obs = env.reset()
 env.robot.display=True
@@ -105,4 +159,4 @@ while True:
     #env.render()
     if done:
       obs = env.reset()
-   
+  #""" 

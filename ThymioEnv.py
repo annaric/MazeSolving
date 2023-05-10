@@ -4,31 +4,36 @@ import math
 
 class ThymioEnv(gym.Env):
     ''' OpenAI Gym environment for the Thymio robot '''
-    def __init__(self,robot,goal=[1,0.6]):
-        #self.action_space = gym.spaces.Discrete(3)
-        self.action_space = gym.spaces.discrete.Discrete(3)
-        self.observation_space = gym.spaces.Box(low=-5, high=5, shape=(3,))
+    def __init__(self,robot,goal=[-0.8,0.2]):
+        self.action_space = gym.spaces.discrete.Discrete(4)
+        self.observation_space = gym.spaces.Box(low=-5, high=5, shape=(2,))
         self.robot=robot
         self.steps=0
-        self.goal=[1,0.6]
+        self.goal=[-0.8,0.2]
 
     def step(self, action):
         ''' Performs a simulation step, returns observation, reward, terminated, truncated, info '''
 
         reward=0.0
+        actionSuccess=False
         #Choose action
         if action==0:                      
-            self.robot.forward(0.1)
+            actionSuccess=self.robot.north(0.5)
             #reward forward movements
             reward+=1.0
 
         elif action==1:
-            self.robot.turn(90)
-            reward+=0.1
+            actionSuccess=self.robot.east(0.5)
+            reward+=1.0
 
         elif action==2:
-            self.robot.turn(-90) 
-            reward+=0.5
+            actionSuccess=self.robot.south(0.5) 
+            reward+=1.0
+
+        elif action==3:
+            actionSuccess=self.robot.west(0.5) 
+            reward+=1.0
+        
         self.robot.step()
         self.steps+=1
         
@@ -50,14 +55,21 @@ class ThymioEnv(gym.Env):
         prox=0
         for p in self.robot.getProximity():
             prox+=p
+
+        #prox = self.robot.getProximity()
         #penalize proximity to obstacles
-        reward-=prox*1.0            
+        reward-=prox           
 
         #Check if robot is in a valid state
         if not self.robot.check_valid_state():
             #the task failed
             reward-=1.0
-            reached=True        
+            reached=True
+        
+        if not actionSuccess:
+            #the task failed
+            reward-=1.0
+            reached=True
         
         obs=self._getObs()
     
@@ -69,11 +81,11 @@ class ThymioEnv(gym.Env):
         pose=self.robot.getPose()
         obs[0]=pose[0]
         obs[1]=pose[1]
-        obs[2]=pose[2]
         return obs
 
     
     def distance(self,p1, p2):
+        # return sum(abs(val1-val2) for val1, val2 in zip(p1,p2)) * 2  #### Manhatten distance later
         return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
    
     def reset(self):
