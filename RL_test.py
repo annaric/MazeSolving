@@ -82,10 +82,10 @@ env.robot.sim_speed=int(4096)
 env.robot.display=True
 env.robot.sim.setBoolParam(env.robot.sim.boolparam_display_enabled,env.robot.display)
 
-#model = DQN("MlpPolicy", env, verbose=1)
-#model.learn(total_timesteps=100000, log_interval=1)
-#model.save("move_robot_c")
-#del model # remove to demonstrate saving and loading
+model = DQN("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=100000, log_interval=1)
+model.save("move_robot_c")
+del model # remove to demonstrate saving and loading
 model = DQN.load("move_robot_c")
 
 print("Model trained succesful! Let's just try it out!")
