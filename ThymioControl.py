@@ -43,12 +43,12 @@ class ThymioControl(ABC):
         return in_collision
     
     def getProximity(self):
-        ''' Returns the proximity sensor readings as a list of 7 values'''
-        #prox = (self.sim.handleProximitySensor(self.handles['/Thymio/ProximityCenter'])[1])
+        ''' Returns the proximity sensor readings of the central sensor'''
+        prox = (self.sim.handleProximitySensor(self.handles['/Thymio/ProximityCenter'])[1])
         #print("prox: ", prox)
-        prox = []
-        for h in self.names['prox']:
-            prox.append(self.sim.handleProximitySensor(self.handles[h])[1])
+        #prox = []
+        #for h in self.names['prox']:
+            #prox.append(self.sim.handleProximitySensor(self.handles[h])[1])
         #print(prox)
         return prox
     

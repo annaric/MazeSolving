@@ -53,10 +53,10 @@ class ThymioEnv(gym.Env):
 
         #Check proximity sensors
         prox=0
-        for p in self.robot.getProximity():
-            prox+=p
+        #for p in self.robot.getProximity():
+        #    prox+=p
 
-        #prox = self.robot.getProximity()
+        prox = self.robot.getProximity()
         #penalize proximity to obstacles
         reward-=prox           
 
@@ -68,6 +68,7 @@ class ThymioEnv(gym.Env):
         
         if not actionSuccess:
             #the task failed
+            print("Task failed, no actionSuccess (wall)")
             reward-=1.0
             reached=True
         
