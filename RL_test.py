@@ -8,9 +8,7 @@ class ThymioControlM(ThymioControl):
     def north(self,distance):
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,1.5708])
         prox=self.getProximity()
-        #for p in self.getProximity():
-        #    prox+=p
-        if (prox > 0.1):
+        if (prox > 0):
             print("wall in front. Went north")
             print("prox: ", prox)
             return False
@@ -25,12 +23,8 @@ class ThymioControlM(ThymioControl):
     
     def east(self,distance):  
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,0])
-        #prox = self.getProximity()
-        prox=0
         prox=self.getProximity()
-        #for p in self.getProximity():
-        #    prox+=p
-        if (prox > 0.1):
+        if (prox > 0):
             print("wall in front. Went east")
             print("prox: ", prox)
             return False
@@ -45,11 +39,8 @@ class ThymioControlM(ThymioControl):
     
     def south(self,distance):       
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,-1.5708])
-        prox=0
-        #for p in self.getProximity():
-        #    prox+=p
         prox=self.getProximity()
-        if (prox > 0.1):
+        if (prox > 0):
             print("wall in front. Went south")
             print("prox: ", prox)
             return False
@@ -64,11 +55,8 @@ class ThymioControlM(ThymioControl):
     
     def west(self,distance):
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,3.14159])
-        prox=0
-        #for p in self.getProximity():
-        #    prox+=p
         prox=self.getProximity()
-        if (prox > 0.1):
+        if (prox > 0):
             print("wall in front. Went west")
             print("prox: ", prox)
             return False
@@ -135,25 +123,29 @@ from ThymioEnv import ThymioEnv
 
 env=ThymioEnv(robot=ThymioControlM(),goal=[-0.8,0.2])
 
-stable_baselines3.common.env_checker.check_env(env,warn=True)
+#stable_baselines3.common.env_checker.check_env(env,warn=True)
 
 env.robot.sim_speed=int(4096)
 env.robot.display=True
 env.robot.sim.setBoolParam(env.robot.sim.boolparam_display_enabled,env.robot.display)
+
 
 '''
 env.robot.north(0.5)
 prox = env.robot.getProximity()
 print("prox north",prox)
 time. sleep(5)
+
 env.robot.west(0.5)
 prox = env.robot.getProximity()
 print("prox west",prox)
 time. sleep(5)
+
 env.robot.east(0.5)
 prox = env.robot.getProximity()
 print("prox east",prox)
 time. sleep(5)
+
 env.robot.south(0.5)
 prox = env.robot.getProximity()
 print("prox south",prox)
@@ -161,7 +153,7 @@ time. sleep(5)
 #'''
 
 
-#"""
+"""
 model = DQN("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
