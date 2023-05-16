@@ -16,27 +16,6 @@ class ThymioEnv(gym.Env):
         reward=0.0
         actionSuccess=False
 
-        position = self.robot.sim.getObjectPose(self.robot.handles[self.robot.names['robot'][0]],self.robot.sim.handle_world)
-
-        # create position touple from the bottom left corner and adds position to the visited places
-        positionHorizontal = ((round(position[0],2)) + 0.75) * 2
-        positionVertical = ((round(position[1],2)) + 0.75) * 2
-
-        print("positionHorizontal, positionVertical")
-        print([positionHorizontal, positionVertical])
-
-        if(positionHorizontal < 0 or positionVertical < 0 or positionHorizontal > 4 or positionVertical > 4):
-            print("Task failed, invalid position")
-            print(positionHorizontal, positionVertical)
-            reward-=1.0
-            reached=True
-
-        if (positionHorizontal, positionVertical) in self.visited:
-            reward-=0.25
-        else:
-            self.visited.add((positionHorizontal, positionVertical))
-            print("added position to visited", self.visited)
-
         #Choose action
         if action==0:                      
             actionSuccess=self.robot.north(0.5)
@@ -56,7 +35,32 @@ class ThymioEnv(gym.Env):
         
         self.robot.step()
         self.steps+=1
-        
+
+        obs=self._getObs()
+        print("obs: ",obs)
+
+        position = self.robot.sim.getObjectPose(self.robot.handles[self.robot.names['robot'][0]],self.robot.sim.handle_world)
+
+        # create position touple from the bottom left corner and adds position to the visited places
+        positionHorizontal = ((round(position[0],2)) + 0.75) * 2
+        positionVertical = ((round(position[1],2)) + 0.75) * 2
+
+        print("positionHorizontal, positionVertical")
+        print([positionHorizontal, positionVertical])
+
+        if(positionHorizontal < 0 or positionVertical < 0 or positionHorizontal > 4 or positionVertical > 4):
+            print("Task failed, invalid position")
+            print(positionHorizontal, positionVertical)
+            reward-=1.0
+            reached=True
+
+        if (positionHorizontal, positionVertical) in self.visited:
+            reward-=0.25
+            print("already visited position ",(positionHorizontal, positionVertical))
+        else:
+            self.visited.add((positionHorizontal, positionVertical))
+            print("added position to visited", self.visited)
+
         #Check distance to goal
         dist=self.distance(self.robot.getPose(),self.goal)
         #penalize distance to goal
@@ -82,10 +86,11 @@ class ThymioEnv(gym.Env):
            # reward-=-1           
 
         #Check if robot is in a valid state
-        if not self.robot.check_valid_state():
+        #if not self.robot.check_valid_state():  # shitty code?
             #the task failed
-            reward-=1.0
-            reached=True
+            #print("no valid state")
+            #reward-=1.0
+            #reached=True
         
         if not actionSuccess:
             #the task failed
@@ -94,6 +99,8 @@ class ThymioEnv(gym.Env):
             #reached=True
         
         obs=self._getObs()
+
+        print("current reward", reward)
     
         return obs, reward , reached, {}
 

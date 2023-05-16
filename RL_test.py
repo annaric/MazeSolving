@@ -16,7 +16,9 @@ class ThymioControlM(ThymioControl):
             print("Went north")
             print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            p1[1]+=distance
+            print("p1",p1)
+            p1[1] = (round(p1[1],2)) + distance
+            #p1[1]+=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
             print("new position", p1)
             return True
@@ -32,7 +34,9 @@ class ThymioControlM(ThymioControl):
             print("Went east")
             print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            p1[0]+=distance
+            print("p1",p1)
+            p1[0] = (round(p1[0],2)) + distance
+            #p1[0]+=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
             print("new position", p1)
             return True
@@ -48,7 +52,9 @@ class ThymioControlM(ThymioControl):
             print("Went south")
             print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            p1[1]-=distance
+            print("p1",p1)
+            p1[1] = (round(p1[1],2)) - distance
+            #p1[1]-=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
             print("new position", p1)
             return True
@@ -64,7 +70,9 @@ class ThymioControlM(ThymioControl):
             print("Went west")
             print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            p1[0]-=distance
+            print("p1",p1)
+            p1[0] = (round(p1[0],2)) - distance
+            #p1[0]-=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
             print("new position", p1)
             return True
