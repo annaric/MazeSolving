@@ -9,72 +9,72 @@ class ThymioControlM(ThymioControl):
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,1.5708])
         prox=self.getProximity()
         if (prox > 0):
-            print("wall in front. Went north")
-            print("prox: ", prox)
+            #print("wall in front. Went north")
+            #print("prox: ", prox)
             return False
         else:
-            print("Went north")
-            print("prox: ", prox)
+            #print("Went north")
+            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            print("p1",p1)
+            #print("p1",p1)
             p1[1] = (round(p1[1],2)) + distance
             #p1[1]+=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            print("new position", p1)
+            #print("new position", p1)
             return True
     
     def east(self,distance):  
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,0])
         prox=self.getProximity()
         if (prox > 0):
-            print("wall in front. Went east")
-            print("prox: ", prox)
+            #print("wall in front. Went east")
+            #print("prox: ", prox)
             return False
         else:
-            print("Went east")
-            print("prox: ", prox)
+            #print("Went east")
+            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            print("p1",p1)
+            #print("p1",p1)
             p1[0] = (round(p1[0],2)) + distance
             #p1[0]+=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            print("new position", p1)
+            #print("new position", p1)
             return True
     
     def south(self,distance):       
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,-1.5708])
         prox=self.getProximity()
         if (prox > 0):
-            print("wall in front. Went south")
-            print("prox: ", prox)
+            #print("wall in front. Went south")
+            #print("prox: ", prox)
             return False
         else:
-            print("Went south")
-            print("prox: ", prox)
+            #print("Went south")
+            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            print("p1",p1)
+            #print("p1",p1)
             p1[1] = (round(p1[1],2)) - distance
             #p1[1]-=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            print("new position", p1)
+            #print("new position", p1)
             return True
     
     def west(self,distance):
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,3.14159])
         prox=self.getProximity()
         if (prox > 0):
-            print("wall in front. Went west")
-            print("prox: ", prox)
+            #print("wall in front. Went west")
+            #print("prox: ", prox)
             return False
         else:
-            print("Went west")
-            print("prox: ", prox)
+            #print("Went west")
+            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            print("p1",p1)
+            #print("p1",p1)
             p1[0] = (round(p1[0],2)) - distance
             #p1[0]-=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            print("new position", p1)
+            #print("new position", p1)
             return True
 
     def check_valid_state(self): 
@@ -166,7 +166,7 @@ model = DQN("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
 del model # remove to demonstrate saving and loading
-
+#"""
 model = DQN.load("move_robot_c")
 
 print("Model trained succesful! Let's just try it out!")

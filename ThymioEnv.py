@@ -10,6 +10,7 @@ class ThymioEnv(gym.Env):
         self.robot=robot
         self.steps=0
         self.goal=[-0.8,0.2]
+        self.totalReward=0
 
     def step(self, action):
         ''' Performs a simulation step, returns observation, reward, terminated, truncated, info '''
@@ -37,7 +38,7 @@ class ThymioEnv(gym.Env):
         self.steps+=1
 
         obs=self._getObs()
-        print("obs: ",obs)
+        #print("obs: ",obs)
 
         position = self.robot.sim.getObjectPose(self.robot.handles[self.robot.names['robot'][0]],self.robot.sim.handle_world)
 
@@ -45,21 +46,21 @@ class ThymioEnv(gym.Env):
         positionHorizontal = ((round(position[0],2)) + 0.75) * 2
         positionVertical = ((round(position[1],2)) + 0.75) * 2
 
-        print("positionHorizontal, positionVertical")
-        print([positionHorizontal, positionVertical])
+        #print("positionHorizontal, positionVertical")
+        #print([positionHorizontal, positionVertical])
 
         if(positionHorizontal < 0 or positionVertical < 0 or positionHorizontal > 4 or positionVertical > 4):
-            print("Task failed, invalid position")
-            print(positionHorizontal, positionVertical)
-            reward-=1.0
+            #print("Task failed, invalid position")
+            #print(positionHorizontal, positionVertical)
+            reward-=0.75
             reached=True
 
         if (positionHorizontal, positionVertical) in self.visited:
             reward-=0.25
-            print("already visited position ",(positionHorizontal, positionVertical))
+            #print("already visited position ",(positionHorizontal, positionVertical))
         else:
             self.visited.add((positionHorizontal, positionVertical))
-            print("added position to visited", self.visited)
+            ##print("added position to visited", self.visited)
 
         #Check distance to goal
         dist=self.distance(self.robot.getPose(),self.goal)
@@ -71,36 +72,29 @@ class ThymioEnv(gym.Env):
             #reward for reaching the goal
             reward+=1.0
             reached=True
-            print(f"Yuhuuuu!! Reward: {reward}")
+            #print(f"Yuhuuuu!! Reward: {reward}")
         else:
             reached=False
-
-        #Check proximity sensors (we check for walls already in different place in the code)
-        #prox=0
-        #for p in self.robot.getProximity():
-        #    prox+=p
-
-        #prox = self.robot.getProximity()
-        #penalize proximity to obstacles
-        #if (prox > 0):
-           # reward-=-1           
-
-        #Check if robot is in a valid state
-        #if not self.robot.check_valid_state():  # shitty code?
-            #the task failed
-            #print("no valid state")
-            #reward-=1.0
-            #reached=True
         
         if not actionSuccess:
             #the task failed
-            print("Step not executed (wall). Punishment")
-            reward-=1.0
+            #print("Step not executed (wall). Punishment")
+            reward-=0.75
             #reached=True
         
         obs=self._getObs()
 
-        print("current reward", reward)
+        #print("current reward", reward)
+        self.totalReward+= reward
+
+        #print("reward", reward)
+        #print("total reward", self.totalReward)
+
+        if self.totalReward < -12.5:
+            #the task failed
+            print("Endles loop prevention")
+            reward-=1
+            reached=True
     
         return obs, reward , reached, {}
 
@@ -121,5 +115,6 @@ class ThymioEnv(gym.Env):
         ''' Resets the simulation, returns initial observation and info'''   
         self.steps=0
         self.robot.reset()
-        self.visited = set()                
+        self.visited = set()
+        self.totalReward=0              
         return self._getObs()
