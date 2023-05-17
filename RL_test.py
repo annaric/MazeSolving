@@ -171,7 +171,7 @@ model = DQN.load("move_robot_c")
 
 print("Model trained succesful! Let's just try it out!")
 
-env=ThymioEnv(robot=ThymioControlM(),goal=[-0.8,0.2])
+env=ThymioEnv(robot=ThymioControlM(),goal=[-0.8,0.2],exploration_final_eps=0.1, learning_rate=0.001)
 env.robot.sim_speed=int(1)
 obs = env.reset()
 env.robot.display=True
