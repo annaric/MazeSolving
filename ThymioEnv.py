@@ -4,22 +4,24 @@ import math
 
 STEP_REWARD = 0.04
 ALREADY_VISITED_REWARD= -0.25
-REACHED_GOAL_REWARD = 26
-ENDLESS_LOOP_PREVENTION_REWARD = -1
-OUT_OF_BOUNCE_REWARD = -0.75
-WALL_REWARD = -0.75
-ENDLESS_LOOP_PREVENTION_THRESHHOLD = -25 #-12.5
+REACHED_GOAL_REWARD = 100
+ENDLESS_LOOP_PREVENTION_REWARD = 0
+OUT_OF_BOUNCE_REWARD = -10#-0.75
+WALL_REWARD = -10 #-0.75
+ENDLESS_LOOP_PREVENTION_THRESHHOLD = -50 #-12.5
 DISTANCE_DIVIDER = 20
 #Max Distance penalty ~ 6.2
 
 class ThymioEnv(gym.Env):
     ''' OpenAI Gym environment for the Thymio robot '''
-    def __init__(self,robot,goal=[-0.8,0.2]):
+    def __init__(self,robot,goal=10):
         self.action_space = gym.spaces.discrete.Discrete(4)
-        self.observation_space = gym.spaces.Box(low=-5, high=5, shape=(2,))
+        #change observation space
+        self.observation_space = gym.spaces.discrete.Discrete(25)
+        #self.observation_space = gym.spaces.Box(low=-5, high=5, shape=(2,))
         self.robot=robot
         self.steps=0
-        self.goal=[-0.8,0.2]
+        self.goal=10
         self.totalReward=0
 
     def step(self, action):
@@ -50,32 +52,24 @@ class ThymioEnv(gym.Env):
         obs=self._getObs()
         #print("obs: ",obs)
 
-        position = self.robot.sim.getObjectPose(self.robot.handles[self.robot.names['robot'][0]],self.robot.sim.handle_world)
-
-        # create position touple from the bottom left corner and adds position to the visited places
-        positionHorizontal = ((round(position[0],2)) + 0.75) * 2
-        positionVertical = ((round(position[1],2)) + 0.75) * 2
-
-        #print("positionHorizontal, positionVertical")
-        #print([positionHorizontal, positionVertical])
-
-        if(positionHorizontal < 0 or positionVertical < 0 or positionHorizontal > 4 or positionVertical > 4):
+        if(obs<0 | obs > 24):
             #print("Task failed, invalid position")
             #print(positionHorizontal, positionVertical)
             reward = reward + OUT_OF_BOUNCE_REWARD
             reached=True
 
-        if (positionHorizontal, positionVertical) in self.visited:
+        if (obs) in self.visited:
             reward = reward + ALREADY_VISITED_REWARD
             #print("already visited position ",(positionHorizontal, positionVertical))
         else:
-            self.visited.add((positionHorizontal, positionVertical))
-            ##print("added position to visited", self.visited)
+            self.visited.add(obs)
+            #print("added position to visited", self.visited)
 
         #Check distance to goal
-        dist=self.distance(self.robot.getPose(),self.goal)
+        dist=self.distance(obs,self.goal)
+        #print(dist)
         #penalize distance to goal
-        reward-=dist/DISTANCE_DIVIDER #**2
+        reward-=(dist**2)/DISTANCE_DIVIDER #**2
         #print("distance penalty: ", dist/DISTANCE_DIVIDER)
 
         #Check if reached goal
@@ -91,7 +85,7 @@ class ThymioEnv(gym.Env):
             #the task failed
             #print("Step not executed (wall). Punishment")
             reward = reward + WALL_REWARD
-            #reached=True
+            reached=True
         
         obs=self._getObs()
 
@@ -110,15 +104,29 @@ class ThymioEnv(gym.Env):
 
     def _getObs(self):
         ''' Returns the current observation: a 2D pose '''
-        obs=self.observation_space.sample()
-        pose=self.robot.getPose()
-        obs[0]=pose[0]
-        obs[1]=pose[1]
-        return obs
+        #obs=self.observation_space.sample()
+        #pose=self.robot.getPose()
+        #obs[0]=pose[0]
+        #obs[1]=pose[1]
+        obs=0
+        position = self.robot.sim.getObjectPose(self.robot.handles[self.robot.names['robot'][0]],self.robot.sim.handle_world)
+        positionHorizontal = int(((round(position[0],2)) + 0.75) * 2)
+        positionVertical = int(((round(position[1],2)) + 0.75) * 2)
+        #print("positionHorizontal ",  positionHorizontal)
+        #print("positionVertical ",  positionVertical)
+        obs = positionHorizontal + positionVertical * 5
+        #print("obs: ", obs)
+        return int(obs)
 
     
     def distance(self,p1, p2):
-        return sum(abs(val1-val2) for val1, val2 in zip(p1,p2)) * 2  #### Manhatten distance later
+        p1Row = p1%5
+        p1Col = p1//5
+        p2Row = p2%5
+        p2Col = p2//5
+        return abs(p1Row - p2Row) + abs(p1Col - p2Col)
+        #Disrecte distance
+        #return sum(abs(val1-val2) for val1, val2 in zip(p1,p2)) * 2  #### Manhatten distance
         #return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
    
     def reset(self):

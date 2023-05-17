@@ -129,13 +129,13 @@ from stable_baselines3 import DQN
 from ThymioEnv import ThymioEnv
 
 
-env=ThymioEnv(robot=ThymioControlM(),goal=[-0.8,0.2])
-
+env=ThymioEnv(robot=ThymioControlM(),goal=10)
 stable_baselines3.common.env_checker.check_env(env,warn=True)
 
 env.robot.sim_speed=int(4096)
 env.robot.display=True
 env.robot.sim.setBoolParam(env.robot.sim.boolparam_display_enabled,env.robot.display)
+
 
 
 '''
@@ -166,12 +166,12 @@ model = DQN("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
 del model # remove to demonstrate saving and loading
-#"""
+
 model = DQN.load("move_robot_c")
 
 print("Model trained succesful! Let's just try it out!")
 
-env=ThymioEnv(robot=ThymioControlM(),goal=[-0.8,0.2],exploration_final_eps=0.1, learning_rate=0.001)
+env=ThymioEnv(robot=ThymioControlM(),goal=10,exploration_final_eps=0.1, learning_rate=0.001)
 env.robot.sim_speed=int(1)
 obs = env.reset()
 env.robot.display=True
