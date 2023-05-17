@@ -162,7 +162,7 @@ time. sleep(5)
 
 
 #"""
-model = DQN("MlpPolicy", env, verbose=1)
+model = DQN("MlpPolicy", env, verbose=1, exploration_final_eps=0.1, learning_rate=0.001)
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
 del model # remove to demonstrate saving and loading
@@ -171,7 +171,7 @@ model = DQN.load("move_robot_c")
 
 print("Model trained succesful! Let's just try it out!")
 
-env=ThymioEnv(robot=ThymioControlM(),goal=10,exploration_final_eps=0.1, learning_rate=0.001)
+env=ThymioEnv(robot=ThymioControlM(),goal=10) #
 env.robot.sim_speed=int(1)
 obs = env.reset()
 env.robot.display=True

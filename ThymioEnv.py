@@ -4,11 +4,11 @@ import math
 
 STEP_REWARD = 0.04
 ALREADY_VISITED_REWARD= -0.25
-REACHED_GOAL_REWARD = 100
+REACHED_GOAL_REWARD = 1000
 ENDLESS_LOOP_PREVENTION_REWARD = 0
-OUT_OF_BOUNCE_REWARD = -10#-0.75
-WALL_REWARD = -10 #-0.75
-ENDLESS_LOOP_PREVENTION_THRESHHOLD = -50 #-12.5
+OUT_OF_BOUNCE_REWARD = -4#-0.75
+WALL_REWARD = -4 #-0.75
+ENDLESS_LOOP_PREVENTION_THRESHHOLD = -1000 #-12.5
 DISTANCE_DIVIDER = 20
 #Max Distance penalty ~ 6.2
 
@@ -75,9 +75,10 @@ class ThymioEnv(gym.Env):
         #Check if reached goal
         if dist<0.25:
             #reward for reaching the goal
-            reward = reward + REACHED_GOAL_REWARD
+            reward = REACHED_GOAL_REWARD
             reached=True
             print(f"Yuhuuuu!! Reward: {reward}")
+            print("total reward: ",self.totalReward)
         else:
             reached=False
         
@@ -85,11 +86,14 @@ class ThymioEnv(gym.Env):
             #the task failed
             #print("Step not executed (wall). Punishment")
             reward = reward + WALL_REWARD
-            reached=True
+            #reached=True
         
         obs=self._getObs()
 
         self.totalReward+= reward
+
+        if reached==True:
+            print("total reward: ",self.totalReward)
 
         #print("reward", reward)
         #print("total reward", self.totalReward)
