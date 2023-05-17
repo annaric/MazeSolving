@@ -2,6 +2,14 @@ from abc import ABC, abstractmethod
 import gym
 import math
 
+STEP_REWARD = 0.04
+OUT_OF_BOUNCE_REWARD = 0.75
+ALREADY_VISITED_REWARD= 0.25
+REACHED_GOAL_REWARD = 25
+WALL_REWARD = 0.75
+ENDLESS_LOOP_PREVENTION_REWARD = 1
+ENDLESS_LOOP_PREVENTION_THRESHHOLD = -25 #-12.5
+
 class ThymioEnv(gym.Env):
     ''' OpenAI Gym environment for the Thymio robot '''
     def __init__(self,robot,goal=[-0.8,0.2]):
@@ -20,19 +28,19 @@ class ThymioEnv(gym.Env):
         #Choose action
         if action==0:                      
             actionSuccess=self.robot.north(0.5)
-            reward-=0.04
+            reward-=STEP_REWARD
 
         elif action==1:
             actionSuccess=self.robot.east(0.5)
-            reward-=0.04
+            reward-=STEP_REWARD
 
         elif action==2:
             actionSuccess=self.robot.south(0.5) 
-            reward-=0.04
+            reward-=STEP_REWARD
 
         elif action==3:
             actionSuccess=self.robot.west(0.5) 
-            reward-=0.04
+            reward-=STEP_REWARD
         
         self.robot.step()
         self.steps+=1
@@ -52,11 +60,11 @@ class ThymioEnv(gym.Env):
         if(positionHorizontal < 0 or positionVertical < 0 or positionHorizontal > 4 or positionVertical > 4):
             #print("Task failed, invalid position")
             #print(positionHorizontal, positionVertical)
-            reward-=0.75
+            reward-= OUT_OF_BOUNCE_REWARD
             reached=True
 
         if (positionHorizontal, positionVertical) in self.visited:
-            reward-=0.25
+            reward-=ALREADY_VISITED_REWARD
             #print("already visited position ",(positionHorizontal, positionVertical))
         else:
             self.visited.add((positionHorizontal, positionVertical))
@@ -70,7 +78,7 @@ class ThymioEnv(gym.Env):
         #Check if reached goal
         if dist<0.25:
             #reward for reaching the goal
-            reward+=1.0
+            reward+=REACHED_GOAL_REWARD
             reached=True
             #print(f"Yuhuuuu!! Reward: {reward}")
         else:
@@ -79,7 +87,7 @@ class ThymioEnv(gym.Env):
         if not actionSuccess:
             #the task failed
             #print("Step not executed (wall). Punishment")
-            reward-=0.75
+            reward-=WALL_REWARD
             #reached=True
         
         obs=self._getObs()
@@ -90,10 +98,10 @@ class ThymioEnv(gym.Env):
         #print("reward", reward)
         #print("total reward", self.totalReward)
 
-        if self.totalReward < -12.5:
+        if self.totalReward < ENDLESS_LOOP_PREVENTION_THRESHHOLD: 
             #the task failed
             print("Endles loop prevention")
-            reward-=1
+            reward-=ENDLESS_LOOP_PREVENTION_REWARD
             reached=True
     
         return obs, reward , reached, {}
