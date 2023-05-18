@@ -4,7 +4,7 @@ import math
 
 STEP_REWARD = 0.5
 ALREADY_VISITED_REWARD= -0.5
-#Distance reward function reward = reward + (1 - (dist/6)**0.4) => distRew: [0, 0.52)
+#Distance reward function reward = reward + (1 - (dist/6)**0.4) => distRew: [0, 0.52)  [0, 0.07, 0.15, 0.24, 0.35, 0.52]
 REACHED_GOAL_REWARD = 25
 WALL_REWARD = -1 #-0.75
 ENDLESS_LOOP_PREVENTION_THRESHHOLD = -25
