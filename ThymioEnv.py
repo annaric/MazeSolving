@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 import gym
 import math
 
-STEP_REWARD = 0.5
-ALREADY_VISITED_REWARD= -0.5
+STEP_REWARD = 0.2
+ALREADY_VISITED_REWARD= -0.6
 #Distance reward function reward = reward + (1 - (dist/6)**0.4) => distRew: [0, 0.52)  [0, 0.07, 0.15, 0.24, 0.35, 0.52]
 REACHED_GOAL_REWARD = 25
 WALL_REWARD = -1 #-0.75
@@ -47,12 +47,11 @@ class ThymioEnv(gym.Env):
         self.robot.step()
         self.steps+=1
 
+        obs=self._getObs()
         dist=self.distance(obs,self.goal)
         distRew = (1 - (dist/6)**0.4)
         #print(distRew)
         reward = reward + distRew
-
-        obs=self._getObs()
 
         if (obs) in self.visited:
             reward = ALREADY_VISITED_REWARD
