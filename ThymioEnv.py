@@ -2,15 +2,13 @@ from abc import ABC, abstractmethod
 import gym
 import math
 
-STEP_REWARD = 0.04
-ALREADY_VISITED_REWARD= -0.25
-REACHED_GOAL_REWARD = 1000
+STEP_REWARD = 0.5
+ALREADY_VISITED_REWARD= -0.5
+#Distance reward function reward = reward + (1 - (dist/6)**0.4) => distRew: [0, 0.52)
+REACHED_GOAL_REWARD = 25
+WALL_REWARD = -1 #-0.75
+ENDLESS_LOOP_PREVENTION_THRESHHOLD = -25
 ENDLESS_LOOP_PREVENTION_REWARD = 0
-OUT_OF_BOUNCE_REWARD = -4 #-0.75
-WALL_REWARD = -10 #-0.75
-ENDLESS_LOOP_PREVENTION_THRESHHOLD = -1000 #-12.5
-DISTANCE_DIVIDER = 20
-#Max Distance penalty ~ 6.2
 
 class ThymioEnv(gym.Env):
     ''' OpenAI Gym environment for the Thymio robot '''
@@ -32,77 +30,56 @@ class ThymioEnv(gym.Env):
         #Choose action
         if action==0:                      
             actionSuccess=self.robot.north(0.5)
-            reward = reward + STEP_REWARD
+            reward = STEP_REWARD
 
         elif action==1:
             actionSuccess=self.robot.east(0.5)
-            reward = reward + STEP_REWARD
+            reward = STEP_REWARD
 
         elif action==2:
             actionSuccess=self.robot.south(0.5) 
-            reward = reward + STEP_REWARD
+            reward = STEP_REWARD
 
         elif action==3:
             actionSuccess=self.robot.west(0.5) 
-            reward = reward + STEP_REWARD
+            reward = STEP_REWARD
         
         self.robot.step()
         self.steps+=1
 
         obs=self._getObs()
-        #print("obs: ",obs)
-
-        if(obs<0 | obs > 24):
-            #print("Task failed, invalid position")
-            #print(positionHorizontal, positionVertical)
-            reward = reward + OUT_OF_BOUNCE_REWARD
-            #reached=True
 
         if (obs) in self.visited:
-            reward = reward + ALREADY_VISITED_REWARD
-            #print("already visited position ",(positionHorizontal, positionVertical))
+            reward = ALREADY_VISITED_REWARD
         else:
             self.visited.add(obs)
-            #print("added position to visited", self.visited)
 
-        #Check distance to goal
         dist=self.distance(obs,self.goal)
-        #print(dist)
-        #penalize distance to goal
-        #reward-=(dist**2)/DISTANCE_DIVIDER
-        reward = reward + ((6-dist)**2)/DISTANCE_DIVIDER
-        #print("distance penalty: ", dist/DISTANCE_DIVIDER)
+        distRew = (1 - (dist/6)**0.4)
+        #print(distRew)
+        reward = reward + distRew
 
         #Check if reached goal
         if dist<0.25:
-            #reward for reaching the goal
             reward = REACHED_GOAL_REWARD
             reached=True
             print(f"Yuhuuuu!! Reward: {reward}")
-            print("total reward: ",self.totalReward)
         else:
             reached=False
         
         if not actionSuccess:
-            #the task failed
-            #print("Step not executed (wall). Punishment")
-            reward = reward + WALL_REWARD
-            #reached=True
+            reward = WALL_REWARD
+            reached=True
         
         obs=self._getObs()
-
+        #print("reward: ", reward)
         self.totalReward+= reward
 
         if reached==True:
             print("total reward: ",self.totalReward)
 
-        #print("reward", reward)
-        #print("total reward", self.totalReward)
-
         if self.totalReward <= ENDLESS_LOOP_PREVENTION_THRESHHOLD: 
-            #the task failed
-            #print("Endles loop prevention")
-            reward = reward + ENDLESS_LOOP_PREVENTION_REWARD
+            reward = ENDLESS_LOOP_PREVENTION_REWARD
             #reached=True
     
         return obs, reward , reached, {}
