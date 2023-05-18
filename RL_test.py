@@ -161,8 +161,8 @@ time. sleep(5)
 #'''
 
 
-"""
-model = DQN("MlpPolicy", env, verbose=1, exploration_final_eps=0.05, learning_rate=0.001, exploration_initial_eps=1, exploration_fraction=0.5)
+#"""
+model = DQN("MlpPolicy", env, verbose=1, exploration_final_eps=0.05, learning_rate=0.01, gamma=0.99, exploration_initial_eps=1, exploration_fraction=0.3)
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
 del model # remove to demonstrate saving and loading

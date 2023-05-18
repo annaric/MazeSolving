@@ -47,17 +47,17 @@ class ThymioEnv(gym.Env):
         self.robot.step()
         self.steps+=1
 
+        dist=self.distance(obs,self.goal)
+        distRew = (1 - (dist/6)**0.4)
+        #print(distRew)
+        reward = reward + distRew
+
         obs=self._getObs()
 
         if (obs) in self.visited:
             reward = ALREADY_VISITED_REWARD
         else:
             self.visited.add(obs)
-
-        dist=self.distance(obs,self.goal)
-        distRew = (1 - (dist/6)**0.4)
-        #print(distRew)
-        reward = reward + distRew
 
         #Check if reached goal
         if dist<0.25:
