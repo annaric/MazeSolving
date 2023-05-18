@@ -5,9 +5,9 @@ import math
 STEP_REWARD = 0.04
 ALREADY_VISITED_REWARD= -0.25
 REACHED_GOAL_REWARD = 1000
-ENDLESS_LOOP_PREVENTION_REWARD = -50
+ENDLESS_LOOP_PREVENTION_REWARD = 0
 OUT_OF_BOUNCE_REWARD = -4 #-0.75
-WALL_REWARD = -4 #-0.75
+WALL_REWARD = -10 #-0.75
 ENDLESS_LOOP_PREVENTION_THRESHHOLD = -1000 #-12.5
 DISTANCE_DIVIDER = 20
 #Max Distance penalty ~ 6.2
@@ -69,7 +69,8 @@ class ThymioEnv(gym.Env):
         dist=self.distance(obs,self.goal)
         #print(dist)
         #penalize distance to goal
-        reward-=(dist**2)/DISTANCE_DIVIDER #**2
+        #reward-=(dist**2)/DISTANCE_DIVIDER
+        reward = reward + ((6-dist)**2)/DISTANCE_DIVIDER
         #print("distance penalty: ", dist/DISTANCE_DIVIDER)
 
         #Check if reached goal
@@ -100,7 +101,7 @@ class ThymioEnv(gym.Env):
 
         if self.totalReward <= ENDLESS_LOOP_PREVENTION_THRESHHOLD: 
             #the task failed
-            print("Endles loop prevention")
+            #print("Endles loop prevention")
             reward = reward + ENDLESS_LOOP_PREVENTION_REWARD
             #reached=True
     
