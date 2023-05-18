@@ -5,8 +5,8 @@ import math
 STEP_REWARD = 0.04
 ALREADY_VISITED_REWARD= -0.25
 REACHED_GOAL_REWARD = 1000
-ENDLESS_LOOP_PREVENTION_REWARD = 0
-OUT_OF_BOUNCE_REWARD = -4#-0.75
+ENDLESS_LOOP_PREVENTION_REWARD = -50
+OUT_OF_BOUNCE_REWARD = -4 #-0.75
 WALL_REWARD = -4 #-0.75
 ENDLESS_LOOP_PREVENTION_THRESHHOLD = -1000 #-12.5
 DISTANCE_DIVIDER = 20
@@ -56,7 +56,7 @@ class ThymioEnv(gym.Env):
             #print("Task failed, invalid position")
             #print(positionHorizontal, positionVertical)
             reward = reward + OUT_OF_BOUNCE_REWARD
-            reached=True
+            #reached=True
 
         if (obs) in self.visited:
             reward = reward + ALREADY_VISITED_REWARD
@@ -102,7 +102,7 @@ class ThymioEnv(gym.Env):
             #the task failed
             print("Endles loop prevention")
             reward = reward + ENDLESS_LOOP_PREVENTION_REWARD
-            reached=True
+            #reached=True
     
         return obs, reward , reached, {}
 
