@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 import gym
 import math
 
-STEP_REWARD = 0.05
-ALREADY_VISITED_REWARD= -0.6
+STEP_REWARD = 0.3
+ALREADY_VISITED_REWARD= -0.5
 #Distance reward function reward = reward + (1 - (dist/6)**0.4) => distRew: [0, 0.52)  [0, 0.07, 0.15, 0.24, 0.35, 0.52]
 REACHED_GOAL_REWARD = 5
 WALL_REWARD = -1 #-0.75
@@ -84,7 +84,7 @@ class ThymioEnv(gym.Env):
             #reward = ENDLESS_LOOP_PREVENTION_REWARD
             #reached=True
     
-        return obs, reward , reached, {}
+        return obs, reward, reached, { "dist": dist }
 
     def _getObs(self):
         ''' Returns the current observation: a 2D pose '''

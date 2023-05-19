@@ -165,8 +165,8 @@ time. sleep(5)
 # for thelogs install tensorflow and execute tensorboard --logdir tb_logs in the ./tb_logs/ folder
 model = DQN("MlpPolicy", env, verbose=1,
 batch_size=4,
- exploration_final_eps=0.05, learning_rate=0.01, gamma=0.99, exploration_initial_eps=1, exploration_fraction=0.1, tensorboard_log='./tb_logs/', learning_starts=10000)
-model.learn(total_timesteps=50000, log_interval=1)
+ exploration_final_eps=0.1, learning_rate=0.01, gamma=0.9, exploration_initial_eps=1, exploration_fraction=0.1, tensorboard_log='./tb_logs/', learning_starts=10000)
+model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
 del model # remove to demonstrate saving and loading
 #"""
