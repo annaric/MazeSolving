@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 import gym
 import math
 
-STEP_REWARD = 0.2
+STEP_REWARD = 0.05
 ALREADY_VISITED_REWARD= -0.6
 #Distance reward function reward = reward + (1 - (dist/6)**0.4) => distRew: [0, 0.52)  [0, 0.07, 0.15, 0.24, 0.35, 0.52]
-REACHED_GOAL_REWARD = 25
+REACHED_GOAL_REWARD = 5
 WALL_REWARD = -1 #-0.75
 ENDLESS_LOOP_PREVENTION_THRESHHOLD = -25
 ENDLESS_LOOP_PREVENTION_REWARD = 0
@@ -21,6 +21,8 @@ class ThymioEnv(gym.Env):
         self.steps=0
         self.goal=10
         self.totalReward=0
+        self.visited = set()
+        self.visited.add(14)
 
     def step(self, action):
         ''' Performs a simulation step, returns observation, reward, terminated, truncated, info '''
@@ -57,6 +59,7 @@ class ThymioEnv(gym.Env):
             reward = ALREADY_VISITED_REWARD
         else:
             self.visited.add(obs)
+            #print("visited array", self.visited)
 
         #Check if reached goal
         if dist<0.25:
@@ -77,8 +80,8 @@ class ThymioEnv(gym.Env):
         if reached==True:
             print("total reward: ",self.totalReward)
 
-        if self.totalReward <= ENDLESS_LOOP_PREVENTION_THRESHHOLD: 
-            reward = ENDLESS_LOOP_PREVENTION_REWARD
+        #if self.totalReward <= ENDLESS_LOOP_PREVENTION_THRESHHOLD: 
+            #reward = ENDLESS_LOOP_PREVENTION_REWARD
             #reached=True
     
         return obs, reward , reached, {}
@@ -115,5 +118,6 @@ class ThymioEnv(gym.Env):
         self.steps=0
         self.robot.reset()
         self.visited = set()
+        self.visited.add(14)
         self.totalReward=0              
         return self._getObs()
