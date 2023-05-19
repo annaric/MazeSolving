@@ -2,12 +2,12 @@ from abc import ABC, abstractmethod
 import gym
 import math
 
-STEP_REWARD = 0
-ALREADY_VISITED_REWARD= -0.6
+STEP_REWARD = -0.04 #0
+ALREADY_VISITED_REWARD= -0.25#-0.4
 #Distance reward function reward = reward + (1 - (dist/6)**0.4) => distRew: [0, 0.52)  [0, 0.07, 0.15, 0.24, 0.35, 0.52]
-REACHED_GOAL_REWARD = 5
-WALL_REWARD = -1 #-0.75
-ENDLESS_LOOP_PREVENTION_THRESHHOLD = -25
+REACHED_GOAL_REWARD = 1
+WALL_REWARD = -0.75 #-0.9
+ENDLESS_LOOP_PREVENTION_THRESHHOLD = -12.5#-25
 ENDLESS_LOOP_PREVENTION_REWARD = 0
 
 class ThymioEnv(gym.Env):
@@ -73,7 +73,7 @@ class ThymioEnv(gym.Env):
         
         if not actionSuccess:
             reward = WALL_REWARD
-            reached=True
+            #reached=True
         
         obs=self._getObs()
         #print("reward: ", reward)
@@ -82,9 +82,9 @@ class ThymioEnv(gym.Env):
         if reached==True:
             print("total reward: ",self.totalReward)
 
-        #if self.totalReward <= ENDLESS_LOOP_PREVENTION_THRESHHOLD: 
+        if self.totalReward <= ENDLESS_LOOP_PREVENTION_THRESHHOLD: 
             #reward = ENDLESS_LOOP_PREVENTION_REWARD
-            #reached=True
+            reached=True
     
         return obs, reward, reached, { "dist": dist, "alreadyVisited": alreadyVisited, "noWallInFront": actionSuccess }
 
