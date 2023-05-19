@@ -89,6 +89,74 @@ class ThymioControlM(ThymioControl):
 
 class ThymioControlC(ThymioControl):
     '''Thymio Control Class for the Mobile Robots Lab -- Moves the robot using the wheels'''
+    def north(self,distance):
+        lastMove = self.getMove()
+        if lastMove == "EAST":
+            self.turn(-90)
+        elif lastMove == "SOUTH":
+            self.turn(180)
+        elif lastMove == "WEST":
+            self.turn(90)
+
+        prox=self.getProximity()
+        self.setMove("NORTH")
+        if (prox > 0):
+            return False
+        else:
+            self.forward(distance)
+            return True
+        
+    def east(self,distance):
+        lastMove = self.getMove()
+        if lastMove == "NORTH":
+            self.turn(90)
+        elif lastMove == "SOUTH":
+            self.turn(-90)
+        elif lastMove == "WEST":
+            self.turn(180)
+
+        prox=self.getProximity()
+        self.setMove("EAST")
+        if (prox > 0):
+            return False
+        else:
+            self.forward(distance)
+            return True
+
+    def south(self,distance):
+        lastMove = self.getMove()
+        if lastMove == "NORTH":
+            self.turn(180)
+        elif lastMove == "EAST":
+            self.turn(90)
+        elif lastMove == "WEST":
+            self.turn(-90)
+
+        prox=self.getProximity()
+        self.setMove("SOUTH")
+        if (prox > 0):
+            return False
+        else:
+            self.forward(distance)
+            return True
+    
+    def west(self,distance):
+        lastMove = self.getMove()
+        if lastMove == "NORTH":
+            self.turn(-90)
+        elif lastMove == "EAST":
+            self.turn(180)
+        elif lastMove == "SOUTH":
+            self.turn(90)
+
+        prox=self.getProximity()
+        self.setMove("WEST")
+        if (prox > 0):
+            return False
+        else:
+            self.forward(distance)
+            return True
+
     def forward(self,distance):
         '''Robot moves forward a given distance'''
         speed=1.0
@@ -161,7 +229,7 @@ time. sleep(5)
 #'''
 
 
-#"""
+"""
 model = DQN("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
@@ -171,7 +239,7 @@ model = DQN.load("move_robot_c")
 
 print("Model trained succesful! Let's just try it out!")
 
-env=ThymioEnv(robot=ThymioControlM(),goal=[-0.8,0.2],exploration_final_eps=0.1, learning_rate=0.001)
+env=ThymioEnv(robot=ThymioControlC(),goal=[-0.8,0.2])
 env.robot.sim_speed=int(1)
 obs = env.reset()
 env.robot.display=True

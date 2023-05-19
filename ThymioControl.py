@@ -23,6 +23,7 @@ class ThymioControl(ABC):
         self._getObjects(self.names['motors'],self.handles)
         self._getObjects(self.names['acc'],self.handles)
         self._getObjects(self.names['coll_ignore'],self.handles)
+        self.lastMove="WEST"
 
     
     def _getObjects(self,list,handles={}):        
@@ -82,7 +83,13 @@ class ThymioControl(ABC):
         self.sim.startSimulation()
         self.sim.setInt32Param(self.sim.intparam_speedmodifier,int(self.sim_speed))
         self.sim.setBoolParam(self.sim.boolparam_display_enabled,self.display)
+        self.lastMove="WEST"
         
+    def setMove(self, move):
+        self.lastMove=move
+    
+    def getMove(self):
+        return self.lastMove
     
     @abstractmethod
     def north(self,distance):
