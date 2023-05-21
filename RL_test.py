@@ -10,72 +10,44 @@ class ThymioControlM(ThymioControl):
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,1.5708])
         prox=self.getProximity()
         if (prox > 0):
-            #print("wall in front. Went north")
-            #print("prox: ", prox)
             return False
         else:
-            #print("Went north")
-            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            #print("p1",p1)
             p1[1] = (round(p1[1],2)) + distance
-            #p1[1]+=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            #print("new position", p1)
             return True
     
     def east(self,distance):  
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,0])
         prox=self.getProximity()
         if (prox > 0):
-            #print("wall in front. Went east")
-            #print("prox: ", prox)
             return False
         else:
-            #print("Went east")
-            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            #print("p1",p1)
             p1[0] = (round(p1[0],2)) + distance
-            #p1[0]+=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            #print("new position", p1)
             return True
     
     def south(self,distance):       
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,-1.5708])
         prox=self.getProximity()
         if (prox > 0):
-            #print("wall in front. Went south")
-            #print("prox: ", prox)
             return False
         else:
-            #print("Went south")
-            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            #print("p1",p1)
             p1[1] = (round(p1[1],2)) - distance
-            #p1[1]-=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            #print("new position", p1)
             return True
     
     def west(self,distance):
         self.sim.setObjectOrientation(self.handles[self.names['robot'][0]],self.sim.handle_world,[0,0,3.14159])
         prox=self.getProximity()
         if (prox > 0):
-            #print("wall in front. Went west")
-            #print("prox: ", prox)
             return False
         else:
-            #print("Went west")
-            #print("prox: ", prox)
             p1=self.sim.getObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world)
-            #print("p1",p1)
             p1[0] = (round(p1[0],2)) - distance
-            #p1[0]-=distance
             self.sim.setObjectPose(self.handles[self.names['robot'][0]],self.sim.handle_world,p1)
-            #print("new position", p1)
             return True
 
     def check_valid_state(self): 
@@ -167,12 +139,9 @@ class ThymioControlC(ThymioControl):
         fwd_duration = dist_m/(lin_speed*torque)-1.6
         self.setSpeeds(speed,speed)
         start=self.sim.getSimulationTime()
-        #print(start, 'start sim time')
         while self.sim.getSimulationTime()-start<fwd_duration:
-            #print(self.sim.getJointTargetVelocity(self.handles['/Thymio/LeftMotor']), self.sim.getJointTargetVelocity(self.handles['/Thymio/RightMotor']))
             time.sleep(self.timestep/100)
         self.setSpeeds(0,0)
-        #self.step()
 
 
     def turn(self,angle):
@@ -233,7 +202,6 @@ while not done:
     if done:
       obs = env.reset()
       done = True
-  #""" 
 
 a = np.array(StepsArray)
 np.savetxt('StepArray.txt', a, fmt='%d')

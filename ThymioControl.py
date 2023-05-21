@@ -46,11 +46,6 @@ class ThymioControl(ABC):
     def getProximity(self):
         ''' Returns the proximity sensor readings of the central sensor'''
         prox = (self.sim.handleProximitySensor(self.handles['/Thymio/ProximityCenter'])[1])
-        #print("prox: ", prox)
-        #proxArray = []
-        #for h in self.names['prox']:
-        #    proxArray.append(self.sim.handleProximitySensor(self.handles[h])[1])
-        #print("proxArray", proxArray)
         return prox
     
     def setSpeeds(self,left,right):
