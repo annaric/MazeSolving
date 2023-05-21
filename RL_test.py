@@ -159,36 +159,33 @@ class ThymioControlC(ThymioControl):
 
     def forward(self,distance):
         '''Robot moves forward a given distance'''
-        """
-        speed=1.0
-        fwd_duration=distance/speed*42.4
+        speed=1.0 #deg/s
+        dist_m = distance/100
+        ang_speed = speed * math.pi/180 #rad/s
+        lin_speed = ang_speed* 0.022 #wheel radius
+        torque = 1 #N/m
+        fwd_duration = dist_m/(lin_speed*torque)-1.6
         self.setSpeeds(speed,speed)
         start=self.sim.getSimulationTime()
+        #print(start, 'start sim time')
         while self.sim.getSimulationTime()-start<fwd_duration:
+            #print(self.sim.getJointTargetVelocity(self.handles['/Thymio/LeftMotor']), self.sim.getJointTargetVelocity(self.handles['/Thymio/RightMotor']))
             time.sleep(self.timestep/100)
         self.setSpeeds(0,0)
-        #self.step()
-        """
-        speed=1.0
-        self.setSpeeds(speed,speed)
-        time.sleep(2)
-        self.setSpeeds(0,0)
-        time.sleep(2)
         #self.step()
 
 
     def turn(self,angle):
-        speed=1.0
-        #turn_duration=fabs(angle)/fabs(speed)*0.037
-        #start=self.sim.getSimulationTime()      
+        speed=1.0 #deg/s
+        turn_duration=fabs(angle)/fabs(speed)*0.03775
+        start=self.sim.getSimulationTime()      
         if angle>0:
             self.setSpeeds(-speed,speed)
         else:
             self.setSpeeds(speed,-speed)
-        #while self.sim.getSimulationTime()-start<turn_duration:
-        time.sleep(2)
+        while self.sim.getSimulationTime()-start<turn_duration:
+            time.sleep(self.timestep/100)
         self.setSpeeds(0,0)
-        time.sleep(2)
 
 import stable_baselines3.common.env_checker
 from stable_baselines3 import DQN
@@ -209,7 +206,8 @@ model = DQN("MlpPolicy", env, verbose=1, tensorboard_log='./tb_logs/')
 model.learn(total_timesteps=100000, log_interval=1)
 model.save("move_robot_c")
 del model
-#"""
+
+"""
 
 model = DQN.load("move_robot_c")
 
@@ -235,30 +233,9 @@ while not done:
     if done:
       obs = env.reset()
       done = True
-      print(StepsArray)
   #""" 
 
 a = np.array(StepsArray)
 np.savetxt('StepArray.txt', a, fmt='%d')
 b = np.loadtxt('StepArray.txt', dtype=int)
-a == b
 print(b)
-
-"""
-realLifeControl = ThymioRLControl()
-
-for i in StepsArray:
-    if i == 0:
-        realLifeControl.north(0.5)
-        print("Step North")
-    elif i == 1:
-        realLifeControl.east(0.5)
-        print("Step East")
-    elif i == 2:
-        realLifeControl.south(0.5)
-        print("Step South")
-    elif i == 3:
-        realLifeControl.west(0.5)
-        print("Step West")
-
-"""
